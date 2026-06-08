@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -13,6 +17,14 @@ export class DoctorService {
   ) {}
 
   async create(createDoctorDto: CreateDoctorProfileDto) {
+    const existingDoctor = await this.doctorRepository.findOne({
+      where: { fullName: createDoctorDto.fullName },
+    });
+
+    if (existingDoctor) {
+      throw new BadRequestException('Doctor profile already exists');
+    }
+
     const doctor = this.doctorRepository.create(createDoctorDto);
     return this.doctorRepository.save(doctor);
   }
@@ -22,10 +34,15 @@ export class DoctorService {
   }
 
   async update(id: number, updateData: Partial<DoctorProfile>) {
-    await this.doctorRepository.update(id, updateData);
-
-    return this.doctorRepository.findOne({
+    const doctor = await this.doctorRepository.findOne({
       where: { id },
     });
+
+    if (!doctor) {
+      throw new NotFoundException('Doctor profile not found');
+    }
+
+    Object.assign(doctor, updateData);
+    return this.doctorRepository.save(doctor);
   }
 }
