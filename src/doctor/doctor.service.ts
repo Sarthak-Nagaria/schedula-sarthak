@@ -20,4 +20,12 @@ export class DoctorService {
   async findAll() {
     return this.doctorRepository.find();
   }
+
+  async update(id: number, updateData: Partial<DoctorProfile>) {
+    await this.doctorRepository.update(id, updateData);
+
+    return this.doctorRepository.findOne({
+      where: { id },
+    });
+  }
 }

@@ -20,4 +20,12 @@ export class PatientService {
   async findAll() {
     return this.patientRepository.find();
   }
+
+  async update(id: number, updateData: Partial<PatientProfile>) {
+    await this.patientRepository.update(id, updateData);
+
+    return this.patientRepository.findOne({
+      where: { id },
+    });
+  }
 }

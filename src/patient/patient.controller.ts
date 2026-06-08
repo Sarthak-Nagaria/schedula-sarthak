@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Patch, Param } from '@nestjs/common';
 
 import { PatientService } from './patient.service';
 import { CreatePatientProfileDto } from './dto/create-patient-profile.dto';
@@ -15,5 +15,10 @@ export class PatientController {
   @Get('profile')
   findAll() {
     return this.patientService.findAll();
+  }
+
+  @Patch('profile/:id')
+  update(@Param('id') id: string, @Body() updateData: any) {
+    return this.patientService.update(Number(id), updateData);
   }
 }
