@@ -71,12 +71,14 @@ export class DoctorService {
     }
 
     if (availability !== undefined) {
-      queryBuilder.andWhere(
-        'LOWER(doctor.availability) = LOWER(:availability)',
-        { availability: availability.toLowerCase() },
-      );
-    }
+      if (availability !== 'true' && availability !== 'false') {
+        throw new BadRequestException('Availability must be true or false');
+      }
 
+      if (availability === 'true') {
+        queryBuilder.andWhere('doctor.availability IS NOT NULL');
+      }
+    }
     queryBuilder
       .skip((pageNumber - 1) * limitNumber)
       .take(limitNumber);
