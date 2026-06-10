@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
+import { DoctorModule } from './doctor/doctor.module';
+import { PatientModule } from './patient/patient.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { User } from './users/user.entity';
 
     AuthModule,
     UsersModule,
+    DoctorModule,
+    PatientModule,
   ],
   controllers: [AppController],
   providers: [AppService],
