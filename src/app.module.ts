@@ -23,7 +23,7 @@ import { PatientProfile } from './patient/patient-profile.entity';
       url: process.env.DATABASE_URL,
       entities: [User, DoctorProfile, PatientProfile],
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: true,
       logging: true,
       ssl:
         process.env.NODE_ENV === 'deployment'
