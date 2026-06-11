@@ -9,25 +9,56 @@ import { Repository } from 'typeorm';
 import { DoctorProfile } from './doctor-profile.entity';
 import { CreateDoctorProfileDto } from './dto/create-doctor-profile.dto';
 import { DoctorQueryDto } from './dto/doctor-query.dto';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class DoctorService {
   constructor(
     @InjectRepository(DoctorProfile)
     private doctorRepository: Repository<DoctorProfile>,
+
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
-  async create(createDoctorDto: CreateDoctorProfileDto) {
+  async create(userId: number, createDoctorDto: CreateDoctorProfileDto) {
+   // console.log('Doctor service userId:', userId);
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+   // console.log('Found user:', user);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     const existingDoctor = await this.doctorRepository.findOne({
-      where: { fullName: createDoctorDto.fullName },
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+      relations: ['user'],
     });
 
     if (existingDoctor) {
       throw new BadRequestException('Doctor profile already exists');
     }
 
-    const doctor = this.doctorRepository.create(createDoctorDto);
-    return this.doctorRepository.save(doctor);
+    const doctor = this.doctorRepository.create({
+      ...createDoctorDto,
+      user,
+    });
+
+   // console.log('Doctor profile before save:', doctor);
+
+    const savedDoctor = await this.doctorRepository.save(doctor);
+
+   // console.log('Saved doctor profile:', savedDoctor);
+
+    return savedDoctor;
   }
 
   async findAll(query: DoctorQueryDto) {
@@ -53,8 +84,7 @@ export class DoctorService {
       );
     }
 
-    const queryBuilder =
-      this.doctorRepository.createQueryBuilder('doctor');
+    const queryBuilder = this.doctorRepository.createQueryBuilder('doctor');
 
     if (specialization) {
       queryBuilder.andWhere(
@@ -79,12 +109,12 @@ export class DoctorService {
         queryBuilder.andWhere('doctor.availability IS NOT NULL');
       }
     }
+
     queryBuilder
       .skip((pageNumber - 1) * limitNumber)
       .take(limitNumber);
 
-    const [doctors, total] =
-      await queryBuilder.getManyAndCount();
+    const [doctors, total] = await queryBuilder.getManyAndCount();
 
     return {
       message: doctors.length

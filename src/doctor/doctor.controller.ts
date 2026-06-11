@@ -8,6 +8,7 @@ import {
   UseGuards,
   Query,
   ParseIntPipe,
+  Req,
 } from '@nestjs/common';
 
 import { DoctorService } from './doctor.service';
@@ -23,10 +24,12 @@ export class DoctorController {
   constructor(private doctorService: DoctorService) {}
 
   @Post('profile')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(Role.DOCTOR)
-  create(@Body() createDoctorDto: CreateDoctorProfileDto) {
-    return this.doctorService.create(createDoctorDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.DOCTOR)
+  create(@Req() req: any, @Body() createDoctorDto: CreateDoctorProfileDto) {
+    console.log('Doctor profile controller user:', req.user);
+
+    return this.doctorService.create(req.user.id, createDoctorDto);
   }
 
   @Get()
