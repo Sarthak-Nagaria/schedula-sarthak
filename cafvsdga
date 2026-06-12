@@ -1,0 +1,56 @@
+[1mdiff --git a/src/patient/patient.service.ts b/src/patient/patient.service.ts[m
+[1mindex 7a9efee..6f74204 100644[m
+[1m--- a/src/patient/patient.service.ts[m
+[1m+++ b/src/patient/patient.service.ts[m
+[36m@@ -1,4 +1,8 @@[m
+[31m-import { Injectable } from '@nestjs/common';[m
+[32m+[m[32mimport {[m
+[32m+[m[32m  Injectable,[m
+[32m+[m[32m  BadRequestException,[m
+[32m+[m[32m  NotFoundException,[m
+[32m+[m[32m} from '@nestjs/common';[m
+ import { InjectRepository } from '@nestjs/typeorm';[m
+ import { Repository } from 'typeorm';[m
+ [m
+[36m@@ -13,7 +17,18 @@[m [mexport class PatientService {[m
+   ) {}[m
+ [m
+   async create(createPatientDto: CreatePatientProfileDto) {[m
+[32m+[m[32m    const existingPatient = await this.patientRepository.findOne({[m
+[32m+[m[32m      where: { fullName: createPatientDto.fullName },[m
+[32m+[m[32m    });[m
+[32m+[m
+[32m+[m[32m    if (existingPatient) {[m
+[32m+[m[32m      throw new BadRequestException([m
+[32m+[m[32m        'Patient profile already exists',[m
+[32m+[m[32m      );[m
+[32m+[m[32m    }[m
+[32m+[m
+     const patient = this.patientRepository.create(createPatientDto);[m
+[32m+[m
+     return this.patientRepository.save(patient);[m
+   }[m
+ [m
+[36m@@ -22,10 +37,18 @@[m [mexport class PatientService {[m
+   }[m
+ [m
+   async update(id: number, updateData: Partial<PatientProfile>) {[m
+[31m-    await this.patientRepository.update(id, updateData);[m
+[31m-[m
+[31m-    return this.patientRepository.findOne({[m
+[32m+[m[32m    const patient = await this.patientRepository.findOne({[m
+       where: { id },[m
+     });[m
+[32m+[m
+[32m+[m[32m    if (!patient) {[m
+[32m+[m[32m      throw new NotFoundException([m
+[32m+[m[32m        'Patient profile not found',[m
+[32m+[m[32m      );[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    Object.assign(patient, updateData);[m
+[32m+[m
+[32m+[m[32m    return this.patientRepository.save(patient);[m
+   }[m
+ }[m
+\ No newline at end of file[m
