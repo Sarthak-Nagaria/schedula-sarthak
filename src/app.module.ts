@@ -11,6 +11,9 @@ import { DoctorModule } from './doctor/doctor.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorProfile } from './doctor/doctor-profile.entity';
 import { PatientProfile } from './patient/patient-profile.entity';
+import { DoctorAvailabilityModule } from './doctor/availability/doctor-availability.module';
+import { RecurringAvailability } from './doctor/availability/entities/recurring-availability.entity';
+import { CustomAvailability } from './doctor/availability/entities/custom-availability.entity';
 
 @Module({
   imports: [
@@ -21,7 +24,13 @@ import { PatientProfile } from './patient/patient-profile.entity';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User, DoctorProfile, PatientProfile],
+      entities: [
+        User,
+        DoctorProfile,
+        PatientProfile,
+        RecurringAvailability,
+        CustomAvailability,
+      ],
       autoLoadEntities: true,
       synchronize: false,
       logging: true,
@@ -29,13 +38,11 @@ import { PatientProfile } from './patient/patient-profile.entity';
         process.env.NODE_ENV === 'deployment'
           ? { rejectUnauthorized: false }
           : false,
-      // ssl: {
-      //   rejectUnauthorized: false,
-      // },
     }),
 
     AuthModule,
     UsersModule,
+    DoctorAvailabilityModule,
     DoctorModule,
     PatientModule,
   ],
