@@ -16,8 +16,8 @@ export class PatientProfile {
   @Column()
   fullName!: string;
 
-  @Column()
-  age!: number;
+  @Column({ type: 'date' })
+  dateOfBirth!: string;
 
   @Column()
   gender!: string;
