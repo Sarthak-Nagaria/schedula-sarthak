@@ -22,13 +22,13 @@ export class DoctorService {
   ) {}
 
   async create(userId: number, createDoctorDto: CreateDoctorProfileDto) {
-   // console.log('Doctor service userId:', userId);
+   
 
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
 
-   // console.log('Found user:', user);
+   
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -52,11 +52,10 @@ export class DoctorService {
       user,
     });
 
-   // console.log('Doctor profile before save:', doctor);
+  
 
     const savedDoctor = await this.doctorRepository.save(doctor);
 
-   // console.log('Saved doctor profile:', savedDoctor);
 
     return savedDoctor;
   }
