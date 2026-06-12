@@ -9,6 +9,7 @@ import {
   Query,
   ParseIntPipe,
   Req,
+  DefaultValuePipe,
 } from '@nestjs/common';
 
 import { DoctorService } from './doctor.service';
@@ -27,8 +28,6 @@ export class DoctorController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.DOCTOR)
   create(@Req() req: any, @Body() createDoctorDto: CreateDoctorProfileDto) {
-    console.log('Doctor profile controller user:', req.user);
-
     return this.doctorService.create(req.user.id, createDoctorDto);
   }
 
@@ -42,6 +41,16 @@ export class DoctorController {
   @Roles(Role.DOCTOR)
   update(@Param('id') id: string, @Body() updateData: any) {
     return this.doctorService.update(Number(id), updateData);
+  }
+
+  @Get(':doctorId/slots')
+  getAvailableSlots(
+    @Param('doctorId', ParseIntPipe) doctorId: number,
+    @Query('date') date: string,
+    @Query('duration', new DefaultValuePipe(15), ParseIntPipe)
+    duration: number,
+  ) {
+    return this.doctorService.getAvailableSlots(doctorId, date, duration);
   }
 
   @Get(':id')

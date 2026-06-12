@@ -7,6 +7,7 @@ import { DoctorProfile } from './src/doctor/doctor-profile.entity';
 import { PatientProfile } from './src/patient/patient-profile.entity';
 import { RecurringAvailability } from './src/doctor/availability/entities/recurring-availability.entity';
 import { CustomAvailability } from './src/doctor/availability/entities/custom-availability.entity';
+import { Appointment } from './src/appointments/appointment.entity';
 
 config();
 
@@ -19,6 +20,7 @@ export default new DataSource({
     PatientProfile,
     RecurringAvailability,
     CustomAvailability,
+    Appointment,
   ],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
